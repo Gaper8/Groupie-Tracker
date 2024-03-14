@@ -1,48 +1,54 @@
 package groupie
 
 import (
-	"fmt"
-	"image/color"
+	"strconv"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 )
 
-func main() {
+func Graphique() {
 	newapp := app.New()
 	windows := newapp.NewWindow("Groupie Tracker !")
 
 	windows.SetContent(widget.NewLabel("Hello !"))
+	test := container.NewVBox()
 
 	windows.Resize(fyne.NewSize(500, 500))
-	artists := api()
+	artists := Api()
+
 	for _, art := range artists {
+		name := widget.NewLabel(art.Name)
+		firstalbum := widget.NewLabel(art.FirstAlbum)
+		locations := widget.NewLabel(art.Locations)
+		concertsdates := widget.NewLabel(art.ConcertDates)
+		relations := widget.NewLabel(art.Relations)
 
-		label1 := canvas.NewText("Groupie Tracker", color.White)
-		label2 := canvas.NewText(fmt.Sprint("Name", art.Name), color.White)
-		label3 := canvas.NewText(fmt.Sprint("Members", art.Members), color.White)
-		label4 := canvas.NewText(fmt.Sprint("CreationDate", art.CreationDate), color.White)
-		label5 := canvas.NewText(fmt.Sprint("FirstAlbum", art.FirstAlbum), color.White)
-		label6 := canvas.NewText(fmt.Sprint("Locations", art.Locations), color.White)
-		label7 := canvas.NewText(fmt.Sprint("ConcertDates", art.ConcertDates), color.White)
-		label8 := canvas.NewText(fmt.Sprint("Relations", art.Relations), color.White)
+		var membersString string
+		for _, member := range art.Members {
+			membersString += member
+		}
 
-		windows.SetContent(
+		creationdatestring := strconv.Itoa(int(art.CreationDate))
+
+		members := widget.NewLabel(membersString)
+		creationDate := widget.NewLabel(creationdatestring)
+
+		test.Add(
 			container.NewVBox(
-				label1,
-				label2,
-				label3,
-				label4,
-				label5,
-				label6,
-				label7,
-				label8,
+				name,
+				members,
+				creationDate,
+				firstalbum,
+				locations,
+				concertsdates,
+				relations,
 			),
 		)
 	}
 
+	windows.SetContent(test)
 	windows.ShowAndRun()
 }

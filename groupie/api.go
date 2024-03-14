@@ -19,7 +19,7 @@ type ArtisteElement struct {
 	Relations    string   `json:"relations"`
 }
 
-func api() Artiste {
+func Api() Artiste {
 	api, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
 	if err != nil {
 		fmt.Print(err)
