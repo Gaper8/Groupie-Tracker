@@ -16,6 +16,9 @@ func Graphique() {
 	windows.SetContent(widget.NewLabel("Hello !"))
 	test := container.NewVBox()
 
+	searchBar := widget.NewEntry()
+	searchBar.SetPlaceHolder("Entrez votre recherche !")
+
 	windows.Resize(fyne.NewSize(500, 500))
 	artists := Api()
 
@@ -49,6 +52,8 @@ func Graphique() {
 		)
 	}
 
-	windows.SetContent(test)
+	c := container.NewVScroll(test)
+	windows.SetContent(c)
+
 	windows.ShowAndRun()
 }
