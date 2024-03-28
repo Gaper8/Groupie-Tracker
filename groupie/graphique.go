@@ -1,7 +1,9 @@
 package groupie
 
 import (
+	"fmt"
 	"strconv"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -20,7 +22,18 @@ func Graphique() {
 	searchBar.SetPlaceHolder("Entrez votre recherche !")
 
 	windows.Resize(fyne.NewSize(500, 500))
-	artists := Api()
+
+	artists, err := Api()
+	if err != nil {
+		fmt.Println("Erreur", err)
+		return
+	}
+
+	locationsData, err := LocationApi()
+	if err != nil {
+		fmt.Println("Erreur", err)
+		return
+	}
 
 	for _, art := range artists {
 		name := widget.NewLabel(art.Name)
@@ -39,21 +52,29 @@ func Graphique() {
 		members := widget.NewLabel(membersString)
 		creationDate := widget.NewLabel(creationdatestring)
 
-		test.Add(
-			container.NewVBox(
-				name,
-				members,
-				creationDate,
-				firstalbum,
-				locations,
-				concertsdates,
-				relations,
-			),
-		)
+		for _, location := range locationsData.Index {
+
+			locationsLabel := widget.NewLabel("Locations: " + strings.Join(location.Locations, ", "))
+			datesLabel := widget.NewLabel("Dates: " + location.Dates)
+
+			test.Add(
+				container.NewVBox(
+					name,
+					members,
+					creationDate,
+					firstalbum,
+					locationsLabel,
+					locations,
+					concertsdates,
+					relations,
+					datesLabel,
+				),
+			)
+		}
+
+		c := container.NewVScroll(test)
+		windows.SetContent(c)
+
+		windows.ShowAndRun()
 	}
-
-	c := container.NewVScroll(test)
-	windows.SetContent(c)
-
-	windows.ShowAndRun()
 }
