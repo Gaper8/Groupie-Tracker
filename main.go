@@ -7,5 +7,5 @@ import (
 func main() {
 	groupie.Graphique()
 	groupie.Api()
-	groupie.recherche()
+	groupie.Recherche()
 }

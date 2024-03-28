@@ -23,21 +23,24 @@ func Graphique() {
 	artists := Api()
 
 	for _, art := range artists {
-		name := widget.NewLabel(art.Name)
-		firstalbum := widget.NewLabel(art.FirstAlbum)
-		locations := widget.NewLabel(art.Locations)
-		concertsdates := widget.NewLabel(art.ConcertDates)
+		name := widget.NewLabel("Nom de l'artiste : " + art.Name)
+		firstalbum := widget.NewLabel("Album : " + art.FirstAlbum)
+		locations := widget.NewLabel("Lieu concert : " + art.Locations)
+		concertsdates := widget.NewLabel("Dates de concert : " + art.ConcertDates)
 		relations := widget.NewLabel(art.Relations)
 
 		var membersString string
-		for _, member := range art.Members {
+		for i, member := range art.Members {
 			membersString += member
+			if i < len(art.Members)-1 {
+				membersString += ", "
+			}
 		}
 
 		creationdatestring := strconv.Itoa(int(art.CreationDate))
 
-		members := widget.NewLabel(membersString)
-		creationDate := widget.NewLabel(creationdatestring)
+		members := widget.NewLabel("Membres : " + membersString)
+		creationDate := widget.NewLabel("Date de création : " + creationdatestring)
 
 		test.Add(
 			container.NewVBox(

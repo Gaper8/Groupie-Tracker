@@ -10,7 +10,7 @@ import (
 
 var suggestions []string // Déclarer la variable suggestions 
 
-func recherche() {
+func Recherche() {
 
     //check box widget
     checkbox1 := widget.NewCheck("1", func(b bool) { fmt.Println("Checkbox 1:", b) })
