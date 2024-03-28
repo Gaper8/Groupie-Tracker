@@ -2,7 +2,6 @@ package groupie
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"fyne.io/fyne/v2"
@@ -12,72 +11,37 @@ import (
 )
 
 func Graphique() {
-	newapp := app.New()
-	windows := newapp.NewWindow("Groupie Tracker !")
+	newApp := app.New()
+	windows := newApp.NewWindow("Groupie Tracker !")
 
-	windows.SetContent(widget.NewLabel("Hello !"))
-	test := container.NewVBox()
+	windows.Resize(fyne.NewSize(1200, 800))
+	pageglobalartist(windows)
+	windows.ShowAndRun()
+}
 
-	searchBar := widget.NewEntry()
-	searchBar.SetPlaceHolder("Entrez votre recherche !")
-
-	windows.Resize(fyne.NewSize(500, 500))
-
+func pageglobalartist(mainpage fyne.Window) {
 	artists, err := Api()
 	if err != nil {
 		fmt.Println("Erreur", err)
 		return
 	}
-
-	locationsData, err := LocationApi()
-	if err != nil {
-		fmt.Println("Erreur", err)
-		return
+	listbuttonartist := make([]fyne.CanvasObject, 0, len(artists))
+	for _, art2 := range artists {
+		art := art2
+		button := widget.NewButton(art.Name, func() {
+			showdataartist(mainpage, art)
+		})
+		listbuttonartist = append(listbuttonartist, button)
 	}
+	scrollableList := container.NewVScroll(container.NewVBox(listbuttonartist...))
+	mainpage.SetContent(scrollableList)
+}
 
-	for _, art := range artists {
-		name := widget.NewLabel("Nom de l'artiste : " + art.Name)
-		firstalbum := widget.NewLabel("Album : " + art.FirstAlbum)
-		locations := widget.NewLabel("Lieu concert : " + art.Locations)
-		concertsdates := widget.NewLabel("Dates de concert : " + art.ConcertDates)
-		relations := widget.NewLabel(art.Relations)
+func showdataartist(mainpage fyne.Window, artist ArtisteElement) {
+	artistDetailsLabel := widget.NewLabel(fmt.Sprintf("Nom: %s\nMembres: %s\nDate de création: %d\nPremier album: %s\nLieux: %s\nDates de concert: %s\nRelations: %s", artist.Name, strings.Join(artist.Members, ", "), artist.CreationDate, artist.FirstAlbum, artist.Locations, artist.ConcertDates, artist.Relations))
 
-		var membersString string
-		for i, member := range art.Members {
-			membersString += member
-			if i < len(art.Members)-1 {
-				membersString += ", "
-			}
-		}
-
-		creationdatestring := strconv.Itoa(int(art.CreationDate))
-
-		members := widget.NewLabel("Membres : " + membersString)
-		creationDate := widget.NewLabel("Date de création : " + creationdatestring)
-
-		for _, location := range locationsData.Index {
-
-			locationsLabel := widget.NewLabel("Locations: " + strings.Join(location.Locations, ", "))
-			datesLabel := widget.NewLabel("Dates: " + location.Dates)
-
-			test.Add(
-				container.NewVBox(
-					name,
-					members,
-					creationDate,
-					firstalbum,
-					locationsLabel,
-					locations,
-					concertsdates,
-					relations,
-					datesLabel,
-				),
-			)
-		}
-
-		c := container.NewVScroll(test)
-		windows.SetContent(c)
-
-		windows.ShowAndRun()
-	}
+	homeButton := widget.NewButton("Home", func() {
+		pageglobalartist(mainpage)
+	})
+	mainpage.SetContent(container.NewVScroll(container.NewVBox(artistDetailsLabel, homeButton)))
 }
