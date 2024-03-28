@@ -79,3 +79,19 @@ func LocationApi() (ApiLocation, error) {
 
 	return locationData, nil
 }
+
+func DatesApi() (ApiDates, error) {
+	response2, err := http.Get("https://groupietrackers.herokuapp.com/api/dates")
+	if err != nil {
+		return ApiDates{}, err
+	}
+	defer response2.Body.Close()
+
+	var datesData ApiDates
+	err = json.NewDecoder(response2.Body).Decode(&datesData)
+	if err != nil {
+		return ApiDates{}, err
+	}
+
+	return datesData, nil
+}

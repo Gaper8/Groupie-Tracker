@@ -38,10 +38,42 @@ func pageglobalartist(mainpage fyne.Window) {
 }
 
 func showdataartist(mainpage fyne.Window, artist ArtisteElement) {
-	artistDetailsLabel := widget.NewLabel(fmt.Sprintf("Nom: %s\nMembres: %s\nDate de création: %d\nPremier album: %s\nLieux: %s\nDates de concert: %s\nRelations: %s", artist.Name, strings.Join(artist.Members, ", "), artist.CreationDate, artist.FirstAlbum, artist.Locations, artist.ConcertDates, artist.Relations))
+	locationData, err := LocationApi()
+	if err != nil {
+		fmt.Println("Erreur", err)
+		return
+	}
+
+	datesData, err := DatesApi()
+	if err != nil {
+		fmt.Println("Erreur", err)
+		return
+	}
+
+	var artistLocations []string
+
+	for _, index := range locationData.Index {
+		if index.ID == artist.ID {
+			artistLocations = index.Locations
+			break
+		}
+	}
+
+	var artistConcertDates []string
+
+	for _, index := range datesData.Index {
+		if index.ID == artist.ID {
+			artistConcertDates = index.Dates
+			break
+		}
+	}
+
+	artistDetailsLabel := widget.NewLabel(fmt.Sprintf("Nom: %s\nMembres: %s\nDate de création: %d\nPremier album: %s\nRelations: %s", artist.Name, strings.Join(artist.Members, ", "), artist.CreationDate, artist.FirstAlbum, artist.Relations))
+	extraInfo := fmt.Sprintf("Lieux des concerts: %s\nDates de concert: %s", strings.Join(artistLocations, ", "), strings.Join(artistConcertDates, ", "))
+	extraInfoLabel := widget.NewLabel(extraInfo)
 
 	homeButton := widget.NewButton("Home", func() {
 		pageglobalartist(mainpage)
 	})
-	mainpage.SetContent(container.NewVScroll(container.NewVBox(artistDetailsLabel, homeButton)))
+	mainpage.SetContent(container.NewVScroll(container.NewVBox(artistDetailsLabel, extraInfoLabel, homeButton)))
 }
