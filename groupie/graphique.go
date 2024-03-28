@@ -51,7 +51,6 @@ func showdataartist(mainpage fyne.Window, artist ArtisteElement) {
 	}
 
 	var artistLocations []string
-
 	for _, index := range locationData.Index {
 		if index.ID == artist.ID {
 			artistLocations = index.Locations
@@ -60,7 +59,6 @@ func showdataartist(mainpage fyne.Window, artist ArtisteElement) {
 	}
 
 	var artistConcertDates []string
-
 	for _, index := range datesData.Index {
 		if index.ID == artist.ID {
 			artistConcertDates = index.Dates
@@ -69,11 +67,11 @@ func showdataartist(mainpage fyne.Window, artist ArtisteElement) {
 	}
 
 	artistDetailsLabel := widget.NewLabel(fmt.Sprintf("Nom: %s\nMembres: %s\nDate de création: %d\nPremier album: %s\nRelations: %s", artist.Name, strings.Join(artist.Members, ", "), artist.CreationDate, artist.FirstAlbum, artist.Relations))
-	extraInfo := fmt.Sprintf("Lieux des concerts: %s\nDates de concert: %s", strings.Join(artistLocations, ", "), strings.Join(artistConcertDates, ", "))
-	extraInfoLabel := widget.NewLabel(extraInfo)
+	locationetdate := fmt.Sprintf("Lieux des concerts: %s\nDates de concert: %s", strings.Join(artistLocations, ", "), strings.Join(artistConcertDates, ", "))
+	locationetdatelabel := widget.NewLabel(locationetdate)
 
 	homeButton := widget.NewButton("Home", func() {
 		pageglobalartist(mainpage)
 	})
-	mainpage.SetContent(container.NewVScroll(container.NewVBox(artistDetailsLabel, extraInfoLabel, homeButton)))
+	mainpage.SetContent(container.NewVScroll(container.NewVBox(artistDetailsLabel, locationetdatelabel, homeButton)))
 }
