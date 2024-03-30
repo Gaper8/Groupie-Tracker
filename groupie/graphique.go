@@ -26,6 +26,7 @@ func pageglobalartist(mainpage fyne.Window) {
 		fmt.Println("Erreur", err)
 		return
 	}
+
 	listbuttonartist := make([]fyne.CanvasObject, 0, len(artists))
 	for _, art2 := range artists {
 		art := art2
@@ -72,15 +73,34 @@ func showdataartist(mainpage fyne.Window, artist ArtisteElement) {
 		}
 	}
 
+	relationData, err := RelationApi()
+	if err != nil {
+		fmt.Println("Erreur", err)
+		return
+	}
+
+	var artistRelations []string
+	for _, index := range relationData.Index {
+		if index.ID == artist.ID {
+			for date, locations := range index.DatesLocations {
+				artistRelations = append(artistRelations, fmt.Sprintf("%s: %s", date, strings.Join(locations, ", ")))
+			}
+			break
+		}
+	}
+
 	testimage := canvas.NewImageFromResource(load)
 	testimage.FillMode = canvas.ImageFillOriginal
 
-	artistDetailsLabel := widget.NewLabel(fmt.Sprintf("Nom: %s\nMembres: %s\nDate de création: %d\nPremier album: %s\nRelations: %s", artist.Name, strings.Join(artist.Members, ", "), artist.CreationDate, artist.FirstAlbum, artist.Relations))
+	artistDetailsLabel := widget.NewLabel(fmt.Sprintf("Nom: %s\nMembres: %s\nDate de création: %d\nPremier album: %s", artist.Name, strings.Join(artist.Members, ", "), artist.CreationDate, artist.FirstAlbum))
 	locationetdate := fmt.Sprintf("Lieux des concerts: %s\nDates de concert: %s", strings.Join(artistLocations, ", "), strings.Join(artistConcertDates, ", "))
 	locationetdatelabel := widget.NewLabel(locationetdate)
+
+	relationsLabel := widget.NewLabel("Dernières relations:")
+	relationsDataLabel := widget.NewLabel(strings.Join(artistRelations, "\n"))
 
 	homeButton := widget.NewButton("Home", func() {
 		pageglobalartist(mainpage)
 	})
-	mainpage.SetContent(container.NewVScroll(container.NewVBox(testimage, artistDetailsLabel, locationetdatelabel, homeButton)))
+	mainpage.SetContent(container.NewVScroll(container.NewVBox(testimage, artistDetailsLabel, locationetdatelabel, relationsLabel, relationsDataLabel, homeButton)))
 }
