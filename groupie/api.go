@@ -33,6 +33,13 @@ type ApiDates struct {
 	} `json:"index"`
 }
 
+type ApiRelation struct {
+	Index []struct {
+		ID             int64               `json:"id"`
+		DatesLocations map[string][]string `json:"datesLocations"`
+	} `json:"index"`
+}
+
 func Api() ([]ArtisteElement, error) {
 	api, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
 	if err != nil {
@@ -92,6 +99,20 @@ func DatesApi() (ApiDates, error) {
 	if err != nil {
 		return ApiDates{}, err
 	}
-
 	return datesData, nil
+}
+
+func RelationApi() (ApiRelation, error) {
+	response3, err := http.Get("https://groupietrackers.herokuapp.com/api/relation")
+	if err != nil {
+		return ApiRelation{}, err
+	}
+	defer response3.Body.Close()
+
+	var relationData ApiRelation
+	err = json.NewDecoder(response3.Body).Decode(&relationData)
+	if err != nil {
+		return ApiRelation{}, err
+	}
+	return relationData, nil
 }
