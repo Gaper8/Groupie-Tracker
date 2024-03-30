@@ -6,6 +6,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 )
@@ -50,6 +51,11 @@ func showdataartist(mainpage fyne.Window, artist ArtisteElement) {
 		return
 	}
 
+	load, err := fyne.LoadResourceFromURLString(artist.Image)
+	if err != nil {
+		fmt.Print(err)
+	}
+
 	var artistLocations []string
 	for _, index := range locationData.Index {
 		if index.ID == artist.ID {
@@ -66,6 +72,9 @@ func showdataartist(mainpage fyne.Window, artist ArtisteElement) {
 		}
 	}
 
+	testimage := canvas.NewImageFromResource(load)
+	testimage.FillMode = canvas.ImageFillOriginal
+
 	artistDetailsLabel := widget.NewLabel(fmt.Sprintf("Nom: %s\nMembres: %s\nDate de création: %d\nPremier album: %s\nRelations: %s", artist.Name, strings.Join(artist.Members, ", "), artist.CreationDate, artist.FirstAlbum, artist.Relations))
 	locationetdate := fmt.Sprintf("Lieux des concerts: %s\nDates de concert: %s", strings.Join(artistLocations, ", "), strings.Join(artistConcertDates, ", "))
 	locationetdatelabel := widget.NewLabel(locationetdate)
@@ -73,5 +82,5 @@ func showdataartist(mainpage fyne.Window, artist ArtisteElement) {
 	homeButton := widget.NewButton("Home", func() {
 		pageglobalartist(mainpage)
 	})
-	mainpage.SetContent(container.NewVScroll(container.NewVBox(artistDetailsLabel, locationetdatelabel, homeButton)))
+	mainpage.SetContent(container.NewVScroll(container.NewVBox(testimage, artistDetailsLabel, locationetdatelabel, homeButton)))
 }
