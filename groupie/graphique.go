@@ -11,14 +11,18 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+// Here we launch the user interface of the application.
 func Graphique() {
 	newApp := app.New()
+	// We create a new Fyne application.
 	windows := newApp.NewWindow("Groupie Tracker !")
 
 	windows.Resize(fyne.NewSize(1200, 800))
 	pageglobalartist(windows)
 	windows.ShowAndRun()
 }
+
+//Then, we create a new window, I define its size. I define the content of my global page.
 
 func pageglobalartist(mainpage fyne.Window) {
 	searchBar := widget.NewEntry()
