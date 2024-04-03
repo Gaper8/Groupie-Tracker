@@ -195,3 +195,64 @@ func showdataartist(mainpage fyne.Window, artist ArtisteElement) {
 	})
 	mainpage.SetContent(container.NewVScroll(container.NewVBox(testimage, artistDetailsLabel, locationetdatelabel, relationsLabel, relationsDataLabel, homeButton)))
 }
+
+
+func ShowDataArtist(mainpage fyne.Window, artist ArtisteElement) {
+    locationData, err := LocationApi()
+    if err != nil {
+        fmt.Println("Erreur", err)
+        return
+    }
+
+    datesData, err := DatesApi()
+    if err != nil {
+        fmt.Println("Erreur", err)
+        return
+    }
+
+    load, err := fyne.LoadResourceFromURLString(artist.Image)
+    if err != nil {
+        fmt.Print(err)
+    }
+
+    var artistLocations []string
+    for _, index := range locationData.Index {
+        if index.ID == artist.ID {
+            artistLocations = index.Locations
+            break
+        }
+    }
+
+    var artistConcertDates []string
+    for _, index := range datesData.Index {
+        if index.ID == artist.ID {
+            artistConcertDates = index.Dates
+            break
+        }
+    }
+
+    var artistLocationsCoordinates []string
+    for _, location := range artistLocations {
+        coordinates, err := GetCoordinatesFromAPI(location)
+        if err != nil {
+            fmt.Println("Erreur lors de la récupération des coordonnées pour ", location, ":", err)
+        } else {
+            artistLocationsCoordinates = append(artistLocationsCoordinates, coordinates)
+        }
+    }
+
+    testImage := canvas.NewImageFromResource(load)
+    testImage.FillMode = canvas.ImageFillOriginal
+
+    artistDetailsLabel := widget.NewLabel(fmt.Sprintf("Nom: %s\nMembres: %s\nDate de création: %d\nPremier album: %s", artist.Name, strings.Join(artist.Members, ", "), artist.CreationDate, artist.FirstAlbum))
+    locationAndDate := fmt.Sprintf("Lieux des concerts: %s\nDates de concert: %s\nCoordonnées géographiques: %s", strings.Join(artistLocations, ", "), strings.Join(artistConcertDates, ", "), strings.Join(artistLocationsCoordinates, ", "))
+    locationAndDateLabel := widget.NewLabel(locationAndDate)
+
+    relationsLabel := widget.NewLabel("Dernières relations:")
+    relationsDataLabel := widget.NewLabel(strings.Join(artistRelations, "\n"))
+
+    homeButton := widget.NewButton("Home", func() {
+        PageGlobalArtist(mainpage)
+    })
+    mainpage.SetContent(container.NewVScroll(container.NewVBox(testImage, artistDetailsLabel, locationAndDateLabel, relationsLabel, relationsDataLabel, homeButton)))
+}
