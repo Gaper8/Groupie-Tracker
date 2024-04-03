@@ -45,18 +45,15 @@ func pageglobalartist(mainpage fyne.Window) {
 	checkbox7 := widget.NewCheck("7", func(b bool) { fmt.Println("Checkbox 7:", b) })
 
 	minValueSlider := widget.NewSlider(0, 50)
-	sliderContainer := container.NewMax(minValueSlider)
-    sliderContainer.Resize(fyne.NewSize(100, 100)) 
+	sliderContainer := container.NewStack(minValueSlider)
+	sliderContainer.Resize(fyne.NewSize(100, 100))
 
 	maxValueSlider := widget.NewSlider(51, 100)
-	maxSliderContainer := container.NewMax(maxValueSlider)
+	maxSliderContainer := container.NewStack(maxValueSlider)
 	maxSliderContainer.Resize(fyne.NewSize(100, 100))
-	
 
 	minValueContainer := container.NewHBox(widget.NewLabel("Min"), maxValueSlider, widget.NewLabel("Max"))
 	maxValueContainer := container.NewHBox(widget.NewLabel("Min"), maxValueSlider, widget.NewLabel("Max"))
-	
-	
 
 	applyButton := widget.NewButton("Appliquer", func() {
 	})
@@ -68,11 +65,10 @@ func pageglobalartist(mainpage fyne.Window) {
 		widget.NewLabel("Date du premier album :"),
 		minValueSlider,
 		minValueContainer,
-		
+
 		widget.NewLabel("Date de Création :"),
 		maxValueSlider,
 		maxValueContainer,
-		
 
 		applyButton,
 	)

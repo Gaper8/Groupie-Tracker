@@ -18,6 +18,8 @@ type ArtisteElement struct {
 	Relations    string   `json:"relations"`
 }
 
+// Here we define the structure of artist elements, including information such as ID, image, and more.
+
 type ApiLocation struct {
 	Index []struct {
 		ID        int64    `json:"id"`
@@ -26,6 +28,8 @@ type ApiLocation struct {
 	} `json:"index"`
 }
 
+// Here we define the structure for the rentals and we store Index all the information from this api.
+
 type ApiDates struct {
 	Index []struct {
 		ID    int64    `json:"id"`
@@ -33,12 +37,16 @@ type ApiDates struct {
 	} `json:"index"`
 }
 
+// Here we define the structure for the concert dates and we store in Index all the information from this API.
+
 type ApiRelation struct {
 	Index []struct {
 		ID             int64               `json:"id"`
 		DatesLocations map[string][]string `json:"datesLocations"`
 	} `json:"index"`
 }
+
+// Here we define the structure for the link between the concert dates and locations of each concert artist and we store all the information in this API in Index.
 
 func Api() ([]ArtisteElement, error) {
 	api, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
@@ -67,6 +75,9 @@ func UnmarshalArtiste(data []byte) ([]ArtisteElement, error) {
 	return r, err
 }
 
+// the Api func allows us to retrieve artist data from a url.
+//Then my code reads the raw data then decodes it and converts it into a slice. We implemented error messages for each step.
+
 func (r *Artiste) Marshal() ([]byte, error) {
 	return json.Marshal(r)
 }
@@ -87,6 +98,10 @@ func LocationApi() (ApiLocation, error) {
 	return locationData, nil
 }
 
+// LocationApi retrieves concert venue data using the URL. I check if my query has no errors.
+//Then the data is traversed and converts the data into my struct. My structure contains an index of all concert venues.
+// If recovery or decoding fails, the function returns an error.
+
 func DatesApi() (ApiDates, error) {
 	response2, err := http.Get("https://groupietrackers.herokuapp.com/api/dates")
 	if err != nil {
@@ -102,6 +117,11 @@ func DatesApi() (ApiDates, error) {
 	return datesData, nil
 }
 
+// DatesApi retrieves concert venue data using the URL.
+//I check if my query has no errors.
+//Then the data is traversed and converts the data into my struct.
+//My structure contains an index of all concert dates. If recovery or decoding fails, the function returns an error.
+
 func RelationApi() (ApiRelation, error) {
 	response3, err := http.Get("https://groupietrackers.herokuapp.com/api/relation")
 	if err != nil {
@@ -116,3 +136,9 @@ func RelationApi() (ApiRelation, error) {
 	}
 	return relationData, nil
 }
+
+// RelationsApi retrieves concert venue data using the URL.
+//I check if my query has no errors.
+//Then the data is traversed and converts the data into my struct.
+//My structure contains an index of the relationships between concert dates and concert locations.
+// If recovery or decoding fails, the function returns an error.
