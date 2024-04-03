@@ -24,20 +24,17 @@ func pageglobalartist(mainpage fyne.Window) {
     searchBar := widget.NewEntry()
     searchBar.SetPlaceHolder("Entrez votre recherche")
 
-    // Créer les conteneurs pour la barre de recherche et la liste des artistes
     searchAndFiltersContainer := container.NewVBox(searchBar)
-    artistsListScroll := container.NewVScroll(container.NewVBox()) // Conteneur de défilement
+    artistsListScroll := container.NewVScroll(container.NewVBox())
     artistsListContainer, ok := artistsListScroll.Content.(*fyne.Container)
     if !ok {
         fmt.Println("Erreur lors de la récupération du conteneur des artistes")
         return
     }
 
-    // Définition de la fonction de rappel pour la barre de recherche
+    // barre de recherche
     searchBar.OnChanged = func(query string) {
-        // Filtrer les artistes en fonction de la recherche
         filteredArtists := filterArtists(query)
-        // Mettre à jour la liste des artistes avec les filtres appliqués
         updateArtistList(mainpage, filteredArtists, searchAndFiltersContainer, artistsListContainer)
     }
 
@@ -74,11 +71,9 @@ func pageglobalartist(mainpage fyne.Window) {
         return
     }
 
-    // Initialiser la liste des artistes sans filtre
     updateArtistList(mainpage, artists, searchAndFiltersContainer, artistsListContainer)
 }
 
-// Fonction pour filtrer les artistes en fonction des termes de recherche
 func filterArtists(query string) []ArtisteElement {
     artists, err := Api()
     if err != nil {
@@ -95,7 +90,6 @@ func filterArtists(query string) []ArtisteElement {
     return filteredArtists
 }
 
-// Fonction pour mettre à jour la liste des artistes affichés
 func updateArtistList(mainpage fyne.Window, artists []ArtisteElement, searchAndFiltersContainer, artistsListContainer *fyne.Container) {
     listButtonArtist := make([]fyne.CanvasObject, 0, len(artists))
     for _, art := range artists {
@@ -103,11 +97,10 @@ func updateArtistList(mainpage fyne.Window, artists []ArtisteElement, searchAndF
             return func() {
                 showdataartist(mainpage, art)
             }
-        }(art)) // Utilisation de la fermeture pour capturer la valeur actuelle de 'art'
+        }(art))
         listButtonArtist = append(listButtonArtist, button)
     }
 
-    // Mise à jour de la liste des artistes dans l'interface utilisateur
     artistsListContainer.Objects = listButtonArtist
     mainpage.SetContent(container.NewBorder(nil, nil, searchAndFiltersContainer, nil, artistsListContainer))
 }
