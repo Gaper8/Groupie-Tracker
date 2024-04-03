@@ -3,6 +3,7 @@ package groupie
 import (
 	"fmt"
 	"strings"
+	"strconv"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -21,6 +22,42 @@ func Graphique() {
 }
 
 func pageglobalartist(mainpage fyne.Window) {
+	// Barre de recherche
+	searchBar := widget.NewEntry()
+	searchBar.SetPlaceHolder("Entrez votre recherche")
+
+	//check box widget
+    checkbox1 := widget.NewCheck("1", func(b bool) { fmt.Println("Checkbox 1:", b) })
+    checkbox2 := widget.NewCheck("2", func(b bool) { fmt.Println("Checkbox 2:", b) })
+    checkbox3 := widget.NewCheck("3", func(b bool) { fmt.Println("Checkbox 3:", b) })
+    checkbox4 := widget.NewCheck("4", func(b bool) { fmt.Println("Checkbox 4:", b) })
+    checkbox5 := widget.NewCheck("5", func(b bool) { fmt.Println("Checkbox 5:", b) })
+    checkbox6 := widget.NewCheck("6", func(b bool) { fmt.Println("Checkbox 6:", b) })
+    checkbox7 := widget.NewCheck("7", func(b bool) { fmt.Println("Checkbox 7:", b) })
+
+	minValueEntry := widget.NewEntry()
+	maxValueEntry := widget.NewEntry()
+	minValueEntry1 := widget.NewEntry()
+	maxValueEntry2 := widget.NewEntry()
+
+	applyButton := widget.NewButton("Appliquer", func() {
+		minValueStr := minValueEntry.Text
+		maxValueStr := maxValueEntry.Text
+
+		minValue, err := strconv.ParseFloat(minValueStr, 4)
+		if err != nil {
+			fmt.Println("Erreur lors de la conversion de la valeur minimale:", err)
+			return
+		}
+
+		maxValue, err := strconv.ParseFloat(maxValueStr, 4)
+		if err != nil {
+			fmt.Println("Erreur lors de la conversion de la valeur maximale:", err)
+			return
+		}
+
+		fmt.Printf("Filtrer les résultats entre %.0f et %.0f\n", minValue, maxValue)
+	})
 	artists, err := Api()
 	if err != nil {
 		fmt.Println("Erreur", err)
@@ -34,9 +71,42 @@ func pageglobalartist(mainpage fyne.Window) {
 			showdataartist(mainpage, art)
 		})
 		listbuttonartist = append(listbuttonartist, button)
+		button.Resize(fyne.NewSize(200, 50))
 	}
+	listContainer := container.NewVBox(listbuttonartist...)
 	scrollableList := container.NewVScroll(container.NewVBox(listbuttonartist...))
+	scrollableList.Resize(fyne.NewSize(1200, 600))
 	mainpage.SetContent(scrollableList)
+
+	mainpage.SetContent(container.NewVBox(
+		searchBar,
+		widget.NewLabel("Nombre de membres :"),
+		checkbox1,
+        checkbox2,
+        checkbox3,
+        checkbox4,
+        checkbox5,
+        checkbox6,
+        checkbox7,
+		widget.NewLabel("Date du premier album :"),
+		container.NewGridWithColumns(2,
+			widget.NewLabel("Valeur min"),
+			minValueEntry,
+			widget.NewLabel("Valeur max"),
+			maxValueEntry,
+		),
+		widget.NewLabel("Date de Creation :"),
+		container.NewGridWithColumns(2,
+			widget.NewLabel("Valeur mine"),
+			minValueEntry1,
+			widget.NewLabel("Valeur max"),
+			maxValueEntry2,
+			widget.NewLabel(""),
+			applyButton,
+		),
+		scrollableList,
+		listContainer,
+	))
 }
 
 func showdataartist(mainpage fyne.Window, artist ArtisteElement) {
