@@ -24,6 +24,18 @@ func pageglobalartist(mainpage fyne.Window) {
 	searchBar := widget.NewEntry()
 	searchBar.SetPlaceHolder("Entrez votre recherche")
 
+	searchAndFiltersContainer := container.NewVBox(searchBar)
+	artistsListScroll := container.NewVScroll(container.NewVBox())
+	artistsListContainer, ok := artistsListScroll.Content.(*fyne.Container)
+	if !ok {
+		fmt.Println("Erreur")
+		return
+	}
+	searchBar.OnChanged = func(query string) {
+		filteredArtists := filterArtists(query)
+		updateArtistsList(mainpage, filteredArtists, searchAndFiltersContainer, artistsListContainer, artistsListScroll)
+	}
+
 	checkbox1 := widget.NewCheck("1", func(b bool) { fmt.Println("Checkbox 1:", b) })
 	checkbox2 := widget.NewCheck("2", func(b bool) { fmt.Println("Checkbox 2:", b) })
 	checkbox3 := widget.NewCheck("3", func(b bool) { fmt.Println("Checkbox 3:", b) })
@@ -49,7 +61,7 @@ func pageglobalartist(mainpage fyne.Window) {
 	applyButton := widget.NewButton("Appliquer", func() {
 	})
 
-	searchAndFiltersContainer := container.NewVBox(
+	searchAndFiltersContainer = container.NewVBox(
 		searchBar,
 		widget.NewLabel("Nombre de membres :"),
 		checkbox1, checkbox2, checkbox3, checkbox4, checkbox5, checkbox6, checkbox7,
@@ -65,24 +77,57 @@ func pageglobalartist(mainpage fyne.Window) {
 		applyButton,
 	)
 
+	searchBar.OnChanged("")
+
 	artists, err := Api()
 	if err != nil {
 		fmt.Println("Erreur", err)
 		return
 	}
 
-	listButtonArtist := make([]fyne.CanvasObject, 0, len(artists))
-	for _, art2 := range artists {
-		art := art2
-		button := widget.NewButton(art.Name, func() {
-			showdataartist(mainpage, art)
-		})
+	updateArtistsList(mainpage, artists, searchAndFiltersContainer, artistsListContainer, artistsListScroll)
+}
+
+func filterArtists(query string) []ArtisteElement {
+	artists, err := Api()
+	if err != nil {
+		fmt.Println("Erreur", err)
+		return nil
+	}
+
+	query = strings.ToLower(query)
+
+	var filteredArtists []ArtisteElement
+	for _, artist := range artists {
+		if strings.Contains(strings.ToLower(artist.Name), query) ||
+			strings.Contains(strings.ToLower(strings.Join(artist.Members, " ")), query) ||
+			strings.Contains(strings.ToLower(artist.Locations), query) ||
+			strings.Contains(strings.ToLower(artist.FirstAlbum), query) ||
+			strings.Contains(strings.ToLower(fmt.Sprint(artist.CreationDate)), query) {
+			filteredArtists = append(filteredArtists, artist)
+		}
+	}
+	return filteredArtists
+}
+
+func updateArtistsList(mainpage fyne.Window, artists []ArtisteElement, searchAndFiltersContainer *fyne.Container, artistsListContainer *fyne.Container, artistsListScroll *container.Scroll) {
+	listButtonArtist := make([]fyne.CanvasObject, 0)
+	for _, artist := range artists {
+		artist := artist
+		button := widget.NewButton(artist.Name, func() func() {
+			return func() {
+				showdataartist(mainpage, artist)
+			}
+		}())
 		listButtonArtist = append(listButtonArtist, button)
 	}
 
-	artistsListContainer := container.NewVScroll(container.NewVBox(listButtonArtist...))
-
-	mainpage.SetContent(container.NewBorder(nil, nil, searchAndFiltersContainer, nil, artistsListContainer))
+	artistsListContainer.Objects = nil
+	for _, button := range listButtonArtist {
+		artistsListContainer.Add(button)
+	}
+	artistsListContainer.Refresh()
+	mainpage.SetContent(container.NewBorder(nil, nil, searchAndFiltersContainer, nil, artistsListScroll))
 }
 
 func showdataartist(mainpage fyne.Window, artist ArtisteElement) {
