@@ -32,10 +32,19 @@ func pageglobalartist(mainpage fyne.Window) {
 	checkbox6 := widget.NewCheck("6", func(b bool) { fmt.Println("Checkbox 6:", b) })
 	checkbox7 := widget.NewCheck("7", func(b bool) { fmt.Println("Checkbox 7:", b) })
 
-	minValueEntry := widget.NewEntry()
-	maxValueEntry := widget.NewEntry()
-	minValueEntry1 := widget.NewEntry()
-	maxValueEntry2 := widget.NewEntry()
+	minValueSlider := widget.NewSlider(0, 50)
+	sliderContainer := container.NewMax(minValueSlider)
+    sliderContainer.Resize(fyne.NewSize(100, 100)) 
+
+	maxValueSlider := widget.NewSlider(51, 100)
+	maxSliderContainer := container.NewMax(maxValueSlider)
+	maxSliderContainer.Resize(fyne.NewSize(100, 100))
+	
+
+	minValueContainer := container.NewHBox(widget.NewLabel("Min"), maxValueSlider, widget.NewLabel("Max"))
+	maxValueContainer := container.NewHBox(widget.NewLabel("Min"), maxValueSlider, widget.NewLabel("Max"))
+	
+	
 
 	applyButton := widget.NewButton("Appliquer", func() {
 	})
@@ -45,9 +54,14 @@ func pageglobalartist(mainpage fyne.Window) {
 		widget.NewLabel("Nombre de membres :"),
 		checkbox1, checkbox2, checkbox3, checkbox4, checkbox5, checkbox6, checkbox7,
 		widget.NewLabel("Date du premier album :"),
-		container.NewHBox(widget.NewLabel("Valeur min"), minValueEntry, widget.NewLabel("Valeur max"), maxValueEntry),
+		minValueSlider,
+		minValueContainer,
+		
 		widget.NewLabel("Date de Création :"),
-		container.NewHBox(widget.NewLabel("Valeur min"), minValueEntry1, widget.NewLabel("Valeur max"), maxValueEntry2),
+		maxValueSlider,
+		maxValueContainer,
+		
+
 		applyButton,
 	)
 
